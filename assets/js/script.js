@@ -10,28 +10,29 @@ function generateTaskId() {
 // Todo: create a function to create a task card
 function createTaskCard(task) {
     const taskCard = 
-    <div class="card mb-3" id="task-${task.id}">
+    `<div class="card mb-3" id="task-${task.id}">
         <div class="card-body">
             <h5 class="card-title">${task.name}</h5>
             <p class="card-text">Due Date: ${task.dueDate}</p>
             <button type="button" class="btn btn-danger delete-btn" data-task-id="${task.id}">Delete</button>
         </div>
-    </div>;
+    </div>`;
     $('#' + task.status + '-cards').append(taskCard);
 
 }
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
-    taskList.forEach(task => {
-        createTaskCard(task);
-    });
-    $(".card").draggable({
-        revert: "invalid",
-        stack: ".card",
-        cursor: "move"
-    });
-
+    if (taskList){
+        taskList.forEach(task => {
+            createTaskCard(task);
+        });
+        $(".card").draggable({
+            revert: "invalid",
+            stack: ".card",
+            cursor: "move"
+        });
+    }
 }
 
 // Todo: create a function to handle adding a new task
@@ -39,6 +40,9 @@ function handleAddTask(event){
     event.preventDefault();
     const taskName = $("#taskName").val();
     const dueDate = $("#dueDate").val();
+    if (!taskList){
+        taskList = [];
+    }
     const newTask = {
         id: generateTaskId(),
         name: taskName,
@@ -81,6 +85,13 @@ $(document).ready(function () {
         accept: ".card",
         drop: handleDrop
     });
-    $("#dueDate").datepicker();
+    dayjs.extend(window.dayjs_plugin_customParseFromat);
+    dayjs.locale(`en`);
+
+    $(`#dueDate`).on(`click`, function() {
+        $(this).attr(`type`, `text`).datepicker({
+            dateFormat: `MM-DD-YYYY`
+        });
+    });
 
 });
